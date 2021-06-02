@@ -20,3 +20,4 @@ spacy==2.2.4
 transformers==4.6.1
 neuralcoref==4.0
 sentencepiece==0.1.95
+lxml==4.6.1
