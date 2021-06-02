@@ -10,10 +10,10 @@ from bs4 import BeautifulSoup
 import datetime
 import sqlite3
 import time
-#from summarizer import Summarizer
+from summarizer import Summarizer
 
 
-def addNews(newsitem, timestamp, cur, con):
+def addNews(newsitem, timestamp, cur, con, model):
     link = newsitem.link.text
     article_resp = requests.get(link)
     if(article_resp.status_code != 200):
@@ -21,7 +21,7 @@ def addNews(newsitem, timestamp, cur, con):
     article_soup = BeautifulSoup(article_resp.content, 'lxml')
     cont = article_soup.find_all("div", class_="_3YYSt")
     data = cont[0].text.replace('"', "'")
-    #data = model(data)
+    data = model(data)
     img = article_soup.find_all("div", class_="_3gupn")
     imgurl = img[0].img['src']
     heading = newsitem.title.text.replace('"', "'")
@@ -38,7 +38,7 @@ def run():
     
     con = sqlite3.connect('news.db')
     cur = con.cursor()
-    #model = Summarizer()
+    model = Summarizer()
     checked = False
     while(True):
         
@@ -77,7 +77,7 @@ def run():
             timestamp = datetime.datetime.timestamp(date_time_obj)
             
             if(timestamp > latest_pub_timestamp):
-                res = addNews(items[i], timestamp, cur, con)
+                res = addNews(items[i], timestamp, cur, con, model)
                 if(not res):
                     print("Failed to add item", i)
                     continue
